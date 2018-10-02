@@ -16,17 +16,22 @@ import java.util.Currency;
 public class CurrencyConvertorImpl implements CurrencyConvertor {
 
     private ExchangeRateTable exchangeRateTable;
+
     //Create logger on what class
     private final Logger logger = LoggerFactory.getLogger(CurrencyConvertorImpl.class);
 
+    //Inicializace
     public CurrencyConvertorImpl(ExchangeRateTable exchangeRateTable) {
         this.exchangeRateTable = exchangeRateTable;
     }
 
     @Override
     public BigDecimal convert(Currency sourceCurrency, Currency targetCurrency, BigDecimal sourceAmount) {
-    	//What to trace
-    	logger.trace("convert({},{},{})",sourceCurrency, targetCurrency, sourceAmount);
+
+        //What to trace - what are we converting
+        logger.trace("convert({},{},{})",sourceCurrency, targetCurrency, sourceAmount);
+
+        //Overeni postupne tradicnich chyb, viz interface
         if (sourceCurrency == null) {
             throw new IllegalArgumentException("sourceCurrency is null");
         }
@@ -37,14 +42,25 @@ public class CurrencyConvertorImpl implements CurrencyConvertor {
             throw new IllegalArgumentException("sourceAmount is null");
         }
         try {
+            //Vemem exchange rate
             BigDecimal exchangeRate = exchangeRateTable.getExchangeRate(sourceCurrency, targetCurrency);
+
+            //Kdyz nenajdem exchangeRate, je null a hodime exception
             if (exchangeRate == null) {
-            	logger.warn("Exchange rate is {}", exchangeRate);
+                //Warning od loggeru .. whatever
+                logger.warn("Exchange rate is {}", exchangeRate);
+
                 throw new UnknownExchangeRateException("ExchangeRate is unknown");
             }
-            return exchangeRate.multiply(sourceAmount).setScale(2, RoundingMode.HALF_EVEN);  //Rounding mode to 2 decimals
+
+            return exchangeRate.multiply(sourceAmount).setScale(2, RoundingMode.HALF_EVEN);  //zaokrouhli na sudeho souseda
+
+            //If whatever fails, catch this, thrown by exchange rate
         } catch (ExternalServiceFailureException ex) {
-            logger.error(ex.getMessage(), ex);
+            //Lognuti erroru .. ?
+            logger.error("External service error");
+            //logger.error(ex.getMessage(), ex);
+
             throw new UnknownExchangeRateException("Error when fetching exchange rate", ex);
         }
     }
