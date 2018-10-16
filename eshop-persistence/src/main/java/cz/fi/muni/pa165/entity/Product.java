@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +22,7 @@ public class Product {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	
+	@NotNull
 	@Column(nullable = false, unique = true)
 	private String name;
 	
@@ -28,7 +30,7 @@ public class Product {
 	private Color color;
 	
 	@Temporal(TemporalType.DATE)
-	java.util.Date addedDate;
+	Date addedDate;
 	
 	public Product(){}
 
@@ -40,8 +42,8 @@ public class Product {
 		this.color = given_color;
 	}
 
-	public void setAddedDate(Date given_date) {
-		this.addedDate = given_date;
+	public void setAddedDate(Date Date) {
+		this.addedDate = Date;
 	}
 
 	public Object getName() {

@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -28,7 +29,10 @@ public class MainJavaSe {
 		emf = Persistence.createEntityManagerFactory("default");
 		try {
 			// BEGIN YOUR CODE
-			task04();
+			//task04();
+			//task05();
+			task06();
+			//task07();
 			// END YOUR CODE
 		} finally {
 			emf.close();
@@ -55,6 +59,7 @@ public class MainJavaSe {
 		
 		//Commit transaction
 		emFour.getTransaction().commit();
+		emFour.close();
 
 		// The code below is just testing code. Do not modify it
 		EntityManager em = emf.createEntityManager();
@@ -88,17 +93,15 @@ public class MainJavaSe {
 		// TODO under this line. create new entity manager and start new transaction. Merge
 		// the detached category
 		// into the context and change the name to "Electro"
-		EntityManager emFive = emf.createEntityManager();
-		emFive.getTransaction().begin();
 		
-		//Vytazeni z detached do noveho kontextu
-		category = emFive.merge(category);
+		
+		EntityManager em2 = emf.createEntityManager();
+		em2.getTransaction().begin();
+		category = em2.merge(category);
 		category.setName("Electro");
-		emFive.getTransaction().commit();
+		em2.getTransaction().commit();
+		em2.close();
 		
-		//Zavreni manageru .. ztrata kontextu
-		emFive.close();
-
 		// The code below is just testing code. Do not modify it
 		EntityManager checkingEm = emf.createEntityManager();
 		checkingEm.getTransaction().begin();
@@ -151,8 +154,15 @@ public class MainJavaSe {
 		em.close();
 
 		assertEq(p.getName(), "Guitar");
+		
 
-		assertEq(p.getAddedDate(), LocalDate.of(2011, Month.JANUARY, 20));
+		Calendar cal = Calendar.getInstance();
+		cal.setTime((Date) p.getAddedDate());
+		assertEq(cal.get(Calendar.YEAR), 2011);
+		assertEq(cal.get(Calendar.MONTH), 0);
+		assertEq(cal.get(Calendar.DAY_OF_MONTH), 20);
+		assertEq(cal.get(Calendar.MINUTE), 0);
+		assertEq(p.getColor(), Color.BLACK);
 		assertEq(p.getColor(), Color.BLACK);
 		System.out.println("Found Guitar with correct values. Starting uniqueness test.");
 
