@@ -179,12 +179,10 @@ public class Task04 extends AbstractTestNGSpringContextTests {
 	 */
 	@Test
 	public void findProductsAddedYesterday() {
-		Calendar cal  = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.add(Calendar.DAY_OF_MONTH, -1);
+		LocalDate yesterday = LocalDate.now().minusDays(1);
 		
-		List<Product> products= em.createQuery("FROM Product p WHERE p.addedDate = :date",Product.class).setParameter("date", cal.getTime()).getResultList();
-		
+		List<Product> products= em.createQuery("FROM Product p WHERE p.addedDate = :date",Product.class).setParameter("date", yesterday).getResultList();
+
 		Assert.assertEquals(products.size(),1);
 		Assert.assertEquals(products.get(0).getName(), "Plate");
 	}
