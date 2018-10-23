@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Category {
@@ -18,9 +19,24 @@ public class Category {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
-
+	
+	@NotNull
 	@Column(nullable=false,unique=true)
 	private String name;
+
+	//Ownership .. v tomto pripade patri Category
+	@ManyToMany(mappedBy = "categories")
+	private Set<Product> products = new HashSet<Product>();
+	
+
+	//TODO after you are done with task02 you can uncomment this methods
+	public void addProduct(Product product) {
+		this.products.add(product);
+	}
+
+	public Set<Product> getProducts() {
+		return Collections.unmodifiableSet(products);
+	}
 
 	public Category(Long categoryId) {
 		this.id = categoryId; 
@@ -35,6 +51,7 @@ public class Category {
 	public void setName(String name) {
 		this.name = name;
 	}
+
 
 	public Long getId() {
 		return id;
